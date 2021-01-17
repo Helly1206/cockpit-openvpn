@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenVPN</title>
+    <meta charset="utf-8">
+    <link href="../base1/patternfly.css" rel="stylesheet" type="text/css">
+    <link href="../stdplgin/stdplgin.css" rel="stylesheet" type="text/css">
+    <script src="../base1/cockpit.js"></script>
+    <script src="../stdplgin/stdplgin-common.js"></script>
+</head>
+<body class="pf-m-redhat-font" id="openvpn-page">
+    <div class="content-header-extra with-navtabs">
+        <div id="openvpnpg" class="stdpg">
+            <div id="openvpn-tabs">
+                <ul role="tablist" class="nav nav-tabs">
+                    <li role="presentation" class="active">
+                        <a id="ovpn-tab-settings" role="tab" aria-controls="ovpn-pane-settings" aria-selected="true">Settings</a>
+                    </li>
+                    <li role="presentation" class="">
+                        <a id="ovpn-tab-cert" role="tab" aria-controls="ovpn-pane-cert" tabindex="-1" aria-selected="false">Certificates</a>
+                    </li>
+                    <li role="presentation" class="">
+                        <a id="ovpn-tab-log" role="tab" aria-controls="ovpn-pane-log" tabindex="-1" aria-selected="false">Log</a>
+                    </li>
+                    <li role="presentation" class="">
+                        <a id="ovpn-tab-status" role="tab" aria-controls="ovpn-pane-status" tabindex="-1" aria-selected="false">Status log</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content">
+        <div id="ovpn-pane-settings" aria-labelledby="ovpn-tab-settings" role="tabpanel" aria-hidden="false" class="fade tab-pane active in"></div>
+        <div id="ovpn-pane-cert" aria-labelledby="ovpn-tab-cert" role="tabpanel" aria-hidden="true" class="fade tab-pane"></div>
+        <div id="ovpn-pane-log" aria-labelledby="ovpn-tab-log" role="tabpanel" aria-hidden="true" class="fade tab-pane"></div>
+        <div id="ovpn-pane-status" aria-labelledby="ovpn-tab-status" role="tabpanel" aria-hidden="true" class="fade tab-pane"></div>
+    </div>
+    <div id="modal-dialog">
+    </div>
+    <div id="modal-dialog2">
+    </div>
+    <script src="openvpn.js"></script>
+</body>
+</html>

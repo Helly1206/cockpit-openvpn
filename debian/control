@@ -1,0 +1,16 @@
+Source: cockpit-openvpn
+Section: net
+Priority: optional
+Maintainer: Helly1206
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.6
+XB-Plugin-Section: sharing
+
+Package: cockpit-openvpn
+Architecture: all
+Depends: openvpn,
+         easy-rsa,
+         cockpit,
+         cockpit-stdplgin (>= 0.81),
+         ${misc:Depends}
+Description: cockpit-openvpn (cockpit UI openVPN setup and certificate management)

@@ -1,0 +1,13 @@
+{
+    "version": "215",
+    "requires": {
+	    "cockpit": "186"
+    },
+    "tools": {
+        "index": {
+            "label": "OpenVPN",
+            "path": "openvpn.html"
+        }
+    },
+    "content-security-policy": "img-src * data: 'unsafe-inline'; default-src 'self' 'unsafe-inline' 'unsafe-eval'"
+}
