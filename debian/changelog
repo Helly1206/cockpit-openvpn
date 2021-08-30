@@ -1,3 +1,9 @@
+cockpit-openvpn (0.81) stable; urgency=low
+
+  * Fixed some bugs on initial installation and dependencies
+
+ -- Helly1206 <hellyrulez@hotmail.com>  Mon, 30 Aug 2021 12:21:27 +0100
+
 cockpit-openvpn (0.80) stable; urgency=low
 
   * Initial cockpit-openvpn release

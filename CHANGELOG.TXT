@@ -1,2 +1,5 @@
+[B]0.8.1[/B]
+- Fixed some bugs on initial installation and dependencies
+
 [B]0.8.0[/B]
 - Initial release

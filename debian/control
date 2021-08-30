@@ -10,6 +10,8 @@ Package: cockpit-openvpn
 Architecture: all
 Depends: openvpn,
          easy-rsa,
+         python3,
+         python3-pip,
          cockpit,
          cockpit-stdplgin (>= 0.81),
          ${misc:Depends}

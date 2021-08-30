@@ -1,3 +1,11 @@
 #!/bin/bash
+NAME="openvpn"
+OPTDIR="/opt"
+OPTLOC="$OPTDIR/$NAME"
+PIP_INSTALL="$OPTLOC/pip_install.sh"
+
+if [ -f "$PIP_INSTALL" ]; then
+    $PIP_INSTALL
+fi
 
 exit 0

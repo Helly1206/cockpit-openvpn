@@ -24,7 +24,9 @@ EASY_RSA_VERSION      = "3.0.8"
 USR_DIR               = "/usr/share"
 EASY_RSA_DIR          = USR_DIR + "/easy-rsa"
 EASY_RSA_CMD          = EASY_RSA_DIR + "/easyrsa"
-EASY_RSA_TGZ_FILE     = "EasyRSA-" + EASY_RSA_VERSION + ".tgz"
+EASY_RSA_FILE         = "EasyRSA-" + EASY_RSA_VERSION
+EASY_RSA_INSTDIR      = USR_DIR + "/" + EASY_RSA_FILE
+EASY_RSA_TGZ_FILE     = EASY_RSA_FILE + ".tgz"
 EASY_RSA_URL          = "https://github.com/OpenVPN/easy-rsa/releases/download/v" + EASY_RSA_VERSION + "/" + EASY_RSA_TGZ_FILE
 
 #########################################################
@@ -47,7 +49,11 @@ if __name__ == "__main__":
             print("Installing Easy RSA v" + EASY_RSA_VERSION)
             ftpstream = urllib.request.urlopen(EASY_RSA_URL)
             thetarfile = tarfile.open(fileobj=ftpstream, mode="r|gz")
-            thetarfile.extractall(OPT_DIR)
+            thetarfile.extractall(USR_DIR)
+            if os.path.isdir(EASY_RSA_INSTDIR):
+                if os.path.isdir(EASY_RSA_DIR):
+                    rmtree(EASY_RSA_DIR)
+                os.rename(EASY_RSA_INSTDIR, EASY_RSA_DIR)
         else:
             print("Easy RSA v" + EASY_RSA_VERSION + " already installed")
     print("Ready")
