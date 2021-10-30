@@ -1,4 +1,4 @@
-cockpit-openvpn v0.81
+cockpit-openvpn v0.84
 
 cockpit-openvpn -- cockpit UI openVPN setup and certificate management
 =============== == ======= == ======= ===== === =========== ==========

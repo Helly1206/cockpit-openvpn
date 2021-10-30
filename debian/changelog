@@ -1,3 +1,10 @@
+cockpit-openvpn (0.84) stable; urgency=low
+
+  * Changed ip-tables settings to systemd service
+  * Added ipv6 support
+
+ -- Helly1206 <hellyrulez@hotmail.com>  Sat, 30 Oct 2021 08:24:42 +0100
+
 cockpit-openvpn (0.81) stable; urgency=low
 
   * Fixed some bugs on initial installation and dependencies

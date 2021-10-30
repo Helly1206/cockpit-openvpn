@@ -49,6 +49,11 @@ class ovpnSettings {
             this.update = buildOpts(this.pane.getSettingsEditForm().getData(), aData);
             this.pane.setButtonDisabled(this.btnUpdate, (Object.keys(this.update).length == 0));
         }
+        var IPv6ReadOnly = false;
+        if (!"enable_ipv6" in aData) {
+            aData.enable_ipv6 = false;
+            IPv6ReadOnly = true;
+        }
         //aData={"port": 1194, "protocol": "udp", "deviceovpn": "tun", "compression": true,
         //"duplicate_cn": false, "pam_authentication": false, "extra_options": "",
         //"loglevel": "Errors and info", "vpn_network": "10.8.0.0", "vpn_mask": "255.255.255.0",
@@ -60,6 +65,15 @@ class ovpnSettings {
         //"DNS_server": ["None", "Current system resolvers", "Google", "1.1.1.1", "OpenDNS", "Quad9", "AdGuard"],
         //"gateway": ["lo", "wlan0", "eth0"],  "users": ["xxxx"]}
         var dlgData = [{
+                param: "enable_ipv6",
+                text: "Enable IPv6",
+                value: aData.enable_ipv6,
+                type: "boolean",
+                onchange: settingsCallback,
+                disabled: false,
+                readonly: IPv6ReadOnly,
+                comment: "Enable usage of IPv6 if available."
+        },{
                 param: "port",
                 text: "Port",
                 value: aData.port,

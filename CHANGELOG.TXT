@@ -1,3 +1,7 @@
+[B]0.8.4[/B]
+- Changed ip-tables settings to systemd service
+- Added ipv6 support
+
 [B]0.8.1[/B]
 - Fixed some bugs on initial installation and dependencies
 

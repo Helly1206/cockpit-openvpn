@@ -25,35 +25,39 @@ import string
 #########################################################
 
 ####################### GLOBALS #########################
-VERSION       = "0.81"
-OVPNNAME      = "openvpn"
-DAEMONOVPN    = OVPNNAME
-DAEMONOVPNSRV = OVPNNAME + "@server"
-CMDNOTEXIST   = 127
-CMDTIMEOUT    = 124
-SYSTEMCTL     = "systemctl"
-CTLSTART      = SYSTEMCTL + " start"
-CTLSTOP       = SYSTEMCTL + " stop"
-CTLRELOAD     = SYSTEMCTL + " reload"
-CTLRESTART    = SYSTEMCTL + " restart"
-CTLENABLE     = SYSTEMCTL + " enable"
-CTLDISABLE    = SYSTEMCTL + " disable"
-CTLSTATUS     = SYSTEMCTL + " status"
-CTLISACTIVE   = SYSTEMCTL + " is-active"
-CTLISENABLED  = SYSTEMCTL + " is-enabled"
-XML_FILENAME  = OVPNNAME + ".xml"
-ENCODING      = 'utf-8'
+VERSION        = "0.84"
+OVPNNAME       = "openvpn"
+DAEMONOVPN     = OVPNNAME
+DAEMONOVPNSRV  = OVPNNAME + "@server"
+DAEMONOVPNIPT  = OVPNNAME + "-iptables"
+SYSTEMDDIR     = "/etc/systemd/system/"
+SYSTEMDOVPNIPT = SYSTEMDDIR + DAEMONOVPNIPT + ".service"
+CMDNOTEXIST    = 127
+CMDTIMEOUT     = 124
+SYSTEMCTL      = "systemctl"
+CTLSTART       = SYSTEMCTL + " start"
+CTLSTOP        = SYSTEMCTL + " stop"
+CTLRELOAD      = SYSTEMCTL + " reload"
+CTLRESTART     = SYSTEMCTL + " restart"
+CTLENABLE      = SYSTEMCTL + " enable"
+CTLDISABLE     = SYSTEMCTL + " disable"
+CTLSTATUS      = SYSTEMCTL + " status"
+CTLISACTIVE    = SYSTEMCTL + " is-active"
+CTLISENABLED   = SYSTEMCTL + " is-enabled"
+XML_FILENAME   = OVPNNAME + ".xml"
+ENCODING       = 'utf-8'
 
-SERVICE_SYSCTL_CONF   = "/etc/sysctl.d/99-" + OVPNNAME + ".conf"
-SERVICE_FORWARD_PROC  = "/proc/sys/net/ipv4/ip_forward"
-SERVICE_IPTABLES_CONF = "/etc/network/if-pre-up.d/" + OVPNNAME
-SERVICE_OPENVPN_DIR   = "/etc/" + OVPNNAME
-SERVICE_OPENVPN_CONF  = SERVICE_OPENVPN_DIR + "/server.conf"
-USR_DIR               = "/usr/share"
-TMP_DIR               = "/tmp"
-EASY_RSA_DIR          = USR_DIR + "/easy-rsa"
-EASY_RSA_CMD          = EASY_RSA_DIR + "/easyrsa"
-EASY_RSA_KEY_DIR      = SERVICE_OPENVPN_DIR + "/pki"
+SERVICE_SYSCTL_CONF      = "/etc/sysctl.d/99-" + OVPNNAME + ".conf"
+SERVICE_FORWARD_PROC     = "/proc/sys/net/ipv4/ip_forward"
+SERVICE_FORWARD_PROC_IP6 = "/proc/sys/net/ipv6/conf/all/forwarding"
+#SERVICE_IPTABLES_CONF = "/etc/network/if-pre-up.d/" + OVPNNAME
+SERVICE_OPENVPN_DIR      = "/etc/" + OVPNNAME
+SERVICE_OPENVPN_CONF     = SERVICE_OPENVPN_DIR + "/server.conf"
+USR_DIR                  = "/usr/share"
+TMP_DIR                  = "/tmp"
+EASY_RSA_DIR             = USR_DIR + "/easy-rsa"
+EASY_RSA_CMD             = EASY_RSA_DIR + "/easyrsa"
+EASY_RSA_KEY_DIR         = SERVICE_OPENVPN_DIR + "/pki"
 
 OVPN_PROTOCOL = ["tcp", "udp"]
 OVPN_DEVICE   = ["tun", "tap"]
@@ -800,34 +804,50 @@ class sfccli(object):
             result['result'] = sctl.start(DAEMONOVPN)
             if result['result']:
                 result['result'] = sctl.start(DAEMONOVPNSRV)
+            if result['result']:
+                result['result'] = sctl.start(DAEMONOVPNIPT)
         elif opt == "stop":
             result['result'] = sctl.stop(DAEMONOVPN)
             if result['result']:
                 result['result'] = sctl.stop(DAEMONOVPNSRV)
+            if result['result']:
+                result['result'] = sctl.stop(DAEMONOVPNIPT)
         elif opt == "restart":
             result['result'] = sctl.restart(DAEMONOVPN)
             if result['result']:
                 result['result'] = sctl.restart(DAEMONOVPNSRV)
+            if result['result']:
+                result['result'] = sctl.restart(DAEMONOVPNIPT)
         elif opt == "reload":
             result['result'] = sctl.reload(DAEMONOVPN)
             if result['result']:
                 result['result'] = sctl.reload(DAEMONOVPNSRV)
+            if result['result']:
+                result['result'] = sctl.reload(DAEMONOVPNIPT)
         elif opt == "enable":
             result['result'] = sctl.enable(DAEMONOVPN)
             if result['result']:
                 result['result'] = sctl.enable(DAEMONOVPNSRV)
+            if result['result']:
+                result['result'] = sctl.enable(DAEMONOVPNIPT)
         elif opt == "disable":
             result['result'] = sctl.disable(DAEMONOVPN)
             if result['result']:
                 result['result'] = sctl.disable(DAEMONOVPNSRV)
+            if result['result']:
+                result['result'] = sctl.disable(DAEMONOVPNIPT)
         elif opt == "isactive":
             result['result'] = sctl.isActive(DAEMONOVPN)
             if result['result']:
-                result['result'] = sctl.isActive(DAEMONOVPNSRV)
+                result['result'] &= sctl.isActive(DAEMONOVPNSRV)
+            if result['result']:
+                result['result'] &= sctl.isActive(DAEMONOVPNIPT)
         elif opt == "isenabled":
             result['result'] = sctl.isEnabled(DAEMONOVPN)
             if result['result']:
-                result['result'] = sctl.isEnabled(DAEMONOVPNSRV)
+                result['result'] &= sctl.isEnabled(DAEMONOVPNSRV)
+            if result['result']:
+                result['result'] &= sctl.isActive(DAEMONOVPNIPT)
         else:
             self.parseError("Invalid ctl option: {}".format(opt))
         print(json.dumps(result))
@@ -838,7 +858,7 @@ class sfccli(object):
         db = database()
         if not db():
             newDb = {}
-
+            newDb["enable_ipv6"] = True
             newDb["port"] = 1194
             newDb["protocol"] = "udp"
             newDb["deviceovpn"] = "tun"
@@ -861,6 +881,10 @@ class sfccli(object):
             newDb["clients"] = ""
             db().update(newDb)
             db.update()
+        else:
+            if not "enable_ipv6" in db():
+                db()["enable_ipv6"] = True
+                db.update()
         return db
 
     def getLog(self, lvalue):
@@ -909,6 +933,15 @@ class sfccli(object):
         except:
             pass
         return ip
+
+    def getIpv6(self, gateway):
+        ip6 = ""
+        try:
+            addr = netifaces.ifaddresses(gateway)[10]
+            ip6 = addr[0]['addr']
+        except:
+            pass
+        return ip6
 
     def getMask(self, gateway):
         mask = ""
@@ -1001,10 +1034,61 @@ class sfccli(object):
         letters = string.ascii_letters
         return ''.join(random.choice(letters) for i in range(length))
 
+    def setupIpTables(self, db, ip, ip6):
+        retval = True
+        iptablesPath = "/usr/sbin/iptables"
+        ip6tablesPath = "/usr/sbin/ip6tables"
+
+        #get path
+        cmd = "command -v iptables"
+        try:
+            iptablesPath = shell().command(cmd).splitlines()[0]
+        except:
+            pass
+        cmd = "command -v ip6tables"
+        try:
+            ip6tablesPath = shell().command(cmd).splitlines()[0]
+        except:
+            pass
+
+        ipTablesConf = []
+        ipTablesConf.append("[Unit]")
+        ipTablesConf.append("Before=network.target")
+        ipTablesConf.append("[Service]")
+        ipTablesConf.append("Type=oneshot")
+        ipTablesConf.append("ExecStart={} -t nat -A POSTROUTING -s {}/24 ! -d {}/24 -j SNAT --to {}".format(iptablesPath, db['vpn_network'], db['vpn_network'], ip))
+        ipTablesConf.append("ExecStart={} -I INPUT -p {} --dport {} -j ACCEPT".format(iptablesPath, db['protocol'], db['port']))
+        ipTablesConf.append("ExecStart={} -I FORWARD -s {}/24 -j ACCEPT".format(iptablesPath, db['vpn_network']))
+        ipTablesConf.append("ExecStart={} -I FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT".format(iptablesPath))
+        ipTablesConf.append("ExecStop={} -t nat -D POSTROUTING -s {}/24 ! -d {}/24 -j SNAT --to {}".format(iptablesPath, db['vpn_network'], db['vpn_network'], ip))
+        ipTablesConf.append("ExecStop={} -D INPUT -p {} --dport {} -j ACCEPT".format(iptablesPath, db['protocol'], db['port']))
+        ipTablesConf.append("ExecStop={} -D FORWARD -s {}/24 -j ACCEPT".format(iptablesPath, db['vpn_network']))
+        ipTablesConf.append("ExecStop={} -D FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT".format(iptablesPath))
+        if ip6:
+            v6vpn = "fddd:{}:{}:{}::/64".format(db['port'],db['port'],db['port'])
+            ipTablesConf.append("ExecStart={} -t nat -A POSTROUTING -s {} ! -d {} -j SNAT --to {}".format(ip6tablesPath, v6vpn, v6vpn, ip6))
+            ipTablesConf.append("ExecStart={} -I FORWARD -s {} -j ACCEPT".format(ip6tablesPath, v6vpn))
+            ipTablesConf.append("ExecStart={} -I FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT".format(ip6tablesPath))
+            ipTablesConf.append("ExecStop={} -t nat -D POSTROUTING -s {} ! -d {} -j SNAT --to {}".format(ip6tablesPath, v6vpn, v6vpn, ip6))
+            ipTablesConf.append("ExecStop={} -D FORWARD -s {} -j ACCEPT".format(ip6tablesPath, v6vpn))
+            ipTablesConf.append("ExecStop={} -D FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT".format(ip6tablesPath))
+        ipTablesConf.append("RemainAfterExit=yes")
+        ipTablesConf.append("[Install]")
+        ipTablesConf.append("WantedBy=multi-user.target")
+
+        with open(SYSTEMDOVPNIPT, "w") as iptables_file:
+            for line in ipTablesConf:
+                iptables_file.write(line + "\n")
+        # enabling and restarting is done automatically when finished all
+        return retval
+
     def setupOpenVpn(self, db):
         retval = True
 
         ip = self.getIp(db['gateway_interface'])
+        ip6 = ""
+        if db["enable_ipv6"]:
+            ip6 = self.getIpv6(db['gateway_interface'])
 
         compression = "comp-lzo"
         if not db['compression']:
@@ -1020,7 +1104,10 @@ class sfccli(object):
         if not db['pam_authentication']:
             pam_authentication = ";" + pam_authentication
 
-        default_gateway = "push \"redirect-gateway def1 bypass-dhcp\""
+        if ip6:
+            default_gateway = "push \"redirect-gateway def1 ipv6 bypass-dhcp\""
+        else:
+            default_gateway = "push \"redirect-gateway def1 bypass-dhcp\""
         if not db['default_gateway']:
             default_gateway = ";" + default_gateway
 
@@ -1042,32 +1129,18 @@ class sfccli(object):
         else:
             duplicate_cn = "ifconfig-pool-persist ipp.txt"
 
-        # Enable net.ipv4.ip_forward.
+        # Enable net.ipv4.ip_forward and net.ipv6.conf.all.forwarding.
         with open(SERVICE_SYSCTL_CONF, "w") as sysctl_file:
             sysctl_file.write("net.ipv4.ip_forward=1")
+            if ip6:
+                sysctl_file.write("net.ipv6.conf.all.forwarding=1")
         with open(SERVICE_FORWARD_PROC, "w") as ipfwd_proc:
             ipfwd_proc.write("1")
+        if ip6:
+            with open(SERVICE_FORWARD_PROC_IP6, "w") as ipfwd_proc:
+                ipfwd_proc.write("1")
 
-        # Remove old iptables rule.
-        if os.path.isfile(SERVICE_IPTABLES_CONF):
-            cmd = "iptables -t nat -D $(tail -1 \"{}\" | cut -c20-)".format(SERVICE_IPTABLES_CONF)
-            try:
-                shell().command(cmd)
-            except:
-                pass
-
-        # Set iptables.
-        cmd = "iptables -t nat -A POSTROUTING -s {}/24 -j SNAT --to {}".format(db['vpn_network'], ip)
-        try:
-            shell().command(cmd)
-        except:
-            self.parseError("Error setting iptables", opt_msg = False, msg = False)
-
-        with open(SERVICE_IPTABLES_CONF, "w") as iptables_conf:
-            iptables_conf.write("#!/bin/sh\n")
-            iptables_conf.write("[ \"\$IFACE\" != \"lo\" ] || exit 0\n")
-            iptables_conf.write("iptables -t nat -A POSTROUTING -s {}/24 -j SNAT --to {}\n".format(db['vpn_network'], ip))
-        os.chmod(SERVICE_IPTABLES_CONF, 0o755)
+        self.setupIpTables(db, ip, ip6)
 
         openVpnConf = []
         openVpnConf.append("port {}".format(db['port']))
@@ -1081,6 +1154,8 @@ class sfccli(object):
         openVpnConf.append("server {} {}".format(db['vpn_network'], db['vpn_mask']))
         openVpnConf.append(duplicate_cn)
         openVpnConf.append(static_route)
+        if ip6:
+            openVpnConf.append("server-ipv6 fddd:{}:{}:{}::/64".format(db['port'],db['port'],db['port']))
         openVpnConf.append(default_gateway)
 
         dns = self.getDns(db['dns_server'])
