@@ -1133,7 +1133,7 @@ class sfccli(object):
         with open(SERVICE_SYSCTL_CONF, "w") as sysctl_file:
             sysctl_file.write("net.ipv4.ip_forward=1")
             if ip6:
-                sysctl_file.write("net.ipv6.conf.all.forwarding=1")
+                sysctl_file.write("\nnet.ipv6.conf.all.forwarding=1")
         with open(SERVICE_FORWARD_PROC, "w") as ipfwd_proc:
             ipfwd_proc.write("1")
         if ip6:
