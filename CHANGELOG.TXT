@@ -1,3 +1,6 @@
+[B]0.8.6[/B]
+- Updated gui to cockpit >=264
+
 [B]0.8.5[/B]
 - Small bugfix
 

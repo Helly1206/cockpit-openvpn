@@ -1,3 +1,9 @@
+cockpit-openvpn (0.86) stable; urgency=low
+
+  * Updated gui to cockpit >=264
+
+ -- Helly1206 <hellyrulez@hotmail.com>  Mon, 24 Oct 2022 19:51:53 +0100
+
 cockpit-openvpn (0.85) stable; urgency=low
 
   * Small bugfix
