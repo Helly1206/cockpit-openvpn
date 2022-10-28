@@ -23,10 +23,10 @@ minify_install () {
         mkdir -p ".$USRLOC"
     fi
 
-    minify -r -o ".$USRLOC" --match="\.js" $NAME
+    minify -o ".$USRLOC/$NAME.js" "$NAME/$NAME.js"
     #minify -r -o ".$USRLOC" --match="\.css" $NAME
     #minify -r -o ".$USRLOC" --match="\.html" $NAME
-    cp "$NAME/openvpn.html" ".$USRLOC/"
+    cp "$NAME/$NAME.html" ".$USRLOC/"
     cp "$NAME/manifest.json" ".$USRLOC/"
 }
 
