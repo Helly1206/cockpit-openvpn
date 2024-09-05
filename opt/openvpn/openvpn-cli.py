@@ -25,7 +25,7 @@ import string
 #########################################################
 
 ####################### GLOBALS #########################
-VERSION        = "0.84"
+VERSION        = "0.88"
 OVPNNAME       = "openvpn"
 DAEMONOVPN     = OVPNNAME
 DAEMONOVPNSRV  = OVPNNAME + "@server"

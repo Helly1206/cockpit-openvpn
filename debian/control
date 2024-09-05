@@ -13,6 +13,6 @@ Depends: openvpn,
          python3,
          python3-pip,
          cockpit,
-         cockpit-stdplgin (>= 0.81),
+         cockpit-stdplgin (>= 0.93),
          ${misc:Depends}
 Description: cockpit-openvpn (cockpit UI openVPN setup and certificate management)
